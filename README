@@ -128,6 +128,29 @@ Default logfile is /var/log/lg.log, be sure that your webserver can write
 it or use any other file (or don't use at all).
 
 
+                                    SECURITY
+
+Log in your Cisco router and then in enable mode, type the following commands:
+
+```
+router#enable view
+Password:
+
+router#config terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
+router(config)#parser view looking-glass
+router(config-view)# secret VIEW-ENABLE-PASSWORD
+router(config-view)# commands exec include all traceroute
+router(config-view)# commands exec include all ping
+router(config-view)# commands exec exclude enable
+router(config-view)# commands exec include all show ip bgp
+router(config-view)# commands exec include show
+router(config-view)# exit
+router(config)#access-list 1 permit <LG SERVER IP>
+router(config)#username lg view looking-glass access-class 1 nopassword user-maxlinks 2
+router(config)# end
+router# write
+```
 
                                     NOTES
 
