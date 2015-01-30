@@ -115,8 +115,8 @@ my %valid_query = (
 );
 
 my %whois = (
-	"RIPE"		=>	"http://www.ripe.net/perl/whois?AS%s",
-	"ARIN"		=>	"http://www.arin.net/cgi-bin/whois.pl?queryinput=%s",
+        "RIPE"          =>      "https://apps.db.ripe.net/search/query.html?searchtext=AS%s",
+        "ARIN"          =>      "http://whois.arin.net/rest/asn/AS%s/pft",
 	"APNIC"		=>	"http://www.apnic.net/apnic-bin/whois.pl?searchtext=AS%s",
 	"default"	=>	"http://www.sixxs.net/tools/whois/?AS%s"
 );
