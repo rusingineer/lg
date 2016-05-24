@@ -137,6 +137,13 @@ my %valid_query = (
 			"ping"			=>	"ping %s",
 			"trace"			=>	"traceroute %s"
 			}
+		},
+	"routeros"	=>	{
+		"ipv46"	=>	{
+			"advertised-routes"	=>	"/routing bgp advertisements print where peer=\"%s\" && prefix=\"%s\"",
+			"ping"	=>	"/tool ping \"%s\" count=5",
+			"trace"	=>	"/tool traceroute \"%s\""
+			}
 		}
 );
 
