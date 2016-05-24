@@ -2101,3 +2101,19 @@ AS65535
 65535:65281	RFC1997 NO_EXPORT
 65535:65282	RFC1997 NO_ADVERTISE
 65535:65283	RFC1997 NO_EXPORT_SUBCONFED
+
+
+#
+# Pirix Ltd.
+# http://www.pirix.ru
+# last update: 19.12.2012
+#
+
+AS48625
+
+URL		https://apps.db.ripe.net/search/query.html?searchtext=AS48625&flags=&sources=RIPE_NCC&grssources=&inverse=&types=#resultsAnchor
+
+48625:0		set local-preference 0 on prefix
+48625:50	set local-preference 50 on prefix
+48625:100	set local-preference 100 on prefix
+48625:65281	announce prefix with community no-export to all peers

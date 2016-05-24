@@ -24,6 +24,10 @@
 use strict qw(subs vars);
 
 my $configfile = "lg.conf";
+<<<<<<< HEAD
+=======
+#$configfile = "lg.conf";
+>>>>>>> a89ba40d98f7973ff7f29d808f9f690fc1d95582
 $ENV{HOME} = ".";	# SSH needs access for $HOME/.ssh
 
 use XML::Parser;
@@ -127,12 +131,26 @@ my %valid_query = (
 			"summary"		=>	"show bgp summary",
 			"ping"			=>	"ping count 5 %s"
 			}
+		},
+	"vyatta"		=>	{
+		"ipv4"			=>	{
+			"bgp"			=>	"show ip bgp %s",
+			"advertised-routes"	=>	"show ip bgp neighbors %s advertised-routes",
+			"summary"		=>	"show ip bgp summary",
+			"ping"			=>	"ping %s",
+			"trace"			=>	"traceroute %s"
+			}
 		}
 );
 
 my %whois = (
+<<<<<<< HEAD
         "RIPE"          =>      "https://apps.db.ripe.net/search/query.html?searchtext=AS%s",
         "ARIN"          =>      "http://whois.arin.net/rest/asn/AS%s/pft",
+=======
+	"RIPE"		=>	"https://apps.db.ripe.net/search/query.html?searchtext=AS%s&flags=&sources=RIPE_NCC&grssources=&inverse=&types=#resultsAnchor#resultsAnchor",
+	"ARIN"		=>	"http://whois.arin.net/rest/asn/AS%s/pft",
+>>>>>>> a89ba40d98f7973ff7f29d808f9f690fc1d95582
 	"APNIC"		=>	"http://www.apnic.net/apnic-bin/whois.pl?searchtext=AS%s",
 	"default"	=>	"http://www.sixxs.net/tools/whois/?AS%s"
 );
@@ -359,7 +377,7 @@ sub xml_charparse {
 	} elsif ($elem eq "timeout") {
 		$timeout = $str;
 	} elsif ($elem eq "disclaimer") {
-		$disclaimer = "<CENTER><TABLE WIDTH=\"85%\"><TR><TD><FONT SIZE=-3>Disclaimer: $str</FONT></TD></TR></TABLE></CENTER>\n";
+		$disclaimer = "<CENTER><TABLE WIDTH=\"85%\"><TR><TD><DIV ALIGN=\"CENTER\"><FONT SIZE=-3>Disclaimer: $str</FONT></DIV></TD></TR></TABLE></CENTER>\n";
 	} elsif ($elem eq "securemode") {
 		if ($str =~ /^(0|off|no)$/i) {
 			$securemode = 0;
@@ -707,6 +725,27 @@ sub run_command
 		$regexp = $1;
 	}
 
+	#vyatta support
+
+	my $prependcommand;
+	my $postpendcommand;
+
+	if ($ostypes{$FORM{router}} eq "vyatta") {
+		if ($command =~ /^show/i) {
+			$prependcommand = "\/usr\/bin\/vtysh -c '";
+			$postpendcommand = "'";
+		} elsif ($command =~ /^trace/i) {
+			$prependcommand = "\/usr\/bin\/";
+			$postpendcommand = " -A -n";
+		} elsif ($command =~ /^ping/i) {
+			$prependcommand = "\/bin\/";
+                        $postpendcommand = " -c 10";
+		}	
+	} else {
+		$prependcommand = "";
+                $postpendcommand = " ; quit";
+	}
+	
 	if ($scheme eq "rsh") {
 		print_error("Configuration error, missing rshcmd") if ($rshcmd eq "");
 		open(P, "$rshcmd $host \'$command\' |");
@@ -721,7 +760,7 @@ sub run_command
 			use Net::SSH::Perl::Cipher;
 		";
 		die $@ if $@;
-		my $remotecmd = "$command; quit";
+		my $remotecmd = "$prependcommand" . "$command" . "$postpendcommand";
 		$remotecmd = "set cli logical-system $logicalsystem{$FORM{router}}; " . $command if (defined $logicalsystem{$FORM{router}});
 		$port = 22 if ($port eq "");
 		my $ssh = Net::SSH::Perl->new($host, port => $port);
@@ -740,7 +779,7 @@ sub run_command
 			use Net::SSH2;
 		";
 		die $@ if $@;
-		my $remotecmd = "$command; quit";
+		my $remotecmd = "$prependcommand" . "$command" . "$postpendcommand";
 		$remotecmd = "set cli logical-system $logicalsystem{$FORM{router}}; " . $command if (defined $logicalsystem{$FORM{router}});
 		$port = 22 if ($port eq "");
 		$ssh2 = Net::SSH2->new();
@@ -847,10 +886,7 @@ my $in_func_showlines = 0;
 sub showlines {
 	my $input = shift;
 
-	if ($command =~ /^trace/i | $command =~ /^ping/i) {
-		if ($command =~ /^trace/i) {
-			$input =~ s/(\[AS\s+)(\d+)(\])/($1 . as2link($2) . $3)/e;
-		}
+	if ($command =~ /^ping/i) {
 		print $input;
 		return;
 	}
@@ -878,7 +914,9 @@ sub showline {
 	$inemptyheader = 0;
 
 	$_ = html_encode($_);
-	if ($command eq "show ip bgp summary") {
+	if ($command =~ /^trace/i) {
+                s/(\[AS\s*)(\d+)(\])/($1 . " " . as2link($2) .  $3)/e;
+	} elsif ($command eq "show ip bgp summary") {
 		s/( local AS number )(\d+)/($1 . as2link($2))/e;
 		s/^([\d\.]+\s+\d+\s+)(\d+)/($1 . as2link($2))/e;
 		s/^(\d+\.\d+\.\d+\.\d+)(\s+.*\s+)([1-9]\d*)$/($1 . $2 . bgplink($3, "neighbors+$1+routes"))/e;
