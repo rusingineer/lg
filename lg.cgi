@@ -23,11 +23,7 @@
 
 use strict qw(subs vars);
 
-my $configfile = "lg.conf";
-<<<<<<< HEAD
-=======
-#$configfile = "lg.conf";
->>>>>>> a89ba40d98f7973ff7f29d808f9f690fc1d95582
+$configfile = "lg.conf";
 $ENV{HOME} = ".";	# SSH needs access for $HOME/.ssh
 
 use XML::Parser;
@@ -144,15 +140,10 @@ my %valid_query = (
 );
 
 my %whois = (
-<<<<<<< HEAD
         "RIPE"          =>      "https://apps.db.ripe.net/search/query.html?searchtext=AS%s",
         "ARIN"          =>      "http://whois.arin.net/rest/asn/AS%s/pft",
-=======
-	"RIPE"		=>	"https://apps.db.ripe.net/search/query.html?searchtext=AS%s&flags=&sources=RIPE_NCC&grssources=&inverse=&types=#resultsAnchor#resultsAnchor",
-	"ARIN"		=>	"http://whois.arin.net/rest/asn/AS%s/pft",
->>>>>>> a89ba40d98f7973ff7f29d808f9f690fc1d95582
-	"APNIC"		=>	"http://www.apnic.net/apnic-bin/whois.pl?searchtext=AS%s",
-	"default"	=>	"http://www.sixxs.net/tools/whois/?AS%s"
+		"APNIC"		=>	"http://www.apnic.net/apnic-bin/whois.pl?searchtext=AS%s",
+		"default"	=>	"http://www.sixxs.net/tools/whois/?AS%s"
 );
 
 $| = 1;
